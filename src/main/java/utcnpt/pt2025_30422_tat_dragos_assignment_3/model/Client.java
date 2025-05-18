@@ -69,7 +69,7 @@ public class Client {
 
     @Override
     public String toString() {
-        return "Client id: " + id + ", name: " + name + ", address: " + address + ", email: " + email + ", age: " + age;
+        return String.format("Client id: %d, name: %s, address: %s, email: %s, age: %d", id, name, address, email, age);
     }
 
 }
