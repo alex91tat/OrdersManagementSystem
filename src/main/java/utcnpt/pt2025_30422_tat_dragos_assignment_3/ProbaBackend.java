@@ -3,9 +3,7 @@ package utcnpt.pt2025_30422_tat_dragos_assignment_3;
 import utcnpt.pt2025_30422_tat_dragos_assignment_3.businessLogic.ClientBLL;
 import utcnpt.pt2025_30422_tat_dragos_assignment_3.model.Client;
 
-import java.util.List;
-
-public class Main {
+public class ProbaBackend {
 //    public static void main(String[] args) {
 //        ClientBLL clientBLL = new ClientBLL();
 //
@@ -16,5 +14,11 @@ public class Main {
 //
 //        Client client = clientBLL.findById(2);
 //        System.out.println("Found client: " + client);
+//    }
+//
+//        ClientBLL clientBLL = new ClientBLL();
+//        Client newClient = clientBLL.findById(1);
+//        newClient.setAddress("Flower Street 69");
+//        Client updatedClient = clientBLL.update(newClient);
 //    }
 }

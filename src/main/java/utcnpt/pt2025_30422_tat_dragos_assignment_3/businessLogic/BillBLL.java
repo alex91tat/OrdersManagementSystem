@@ -3,9 +3,11 @@ package utcnpt.pt2025_30422_tat_dragos_assignment_3.businessLogic;
 import utcnpt.pt2025_30422_tat_dragos_assignment_3.dataAccess.BillDAO;
 import utcnpt.pt2025_30422_tat_dragos_assignment_3.model.Bill;
 
+import java.util.List;
+
 public class BillBLL extends AbstractBLL<Bill>{
     public BillBLL() {
-        super(new BillDAO(), null);
+        super(new BillDAO(), List.of());
     }
 
     @Override

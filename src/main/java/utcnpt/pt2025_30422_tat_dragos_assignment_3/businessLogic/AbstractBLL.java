@@ -23,18 +23,12 @@ public class AbstractBLL<T> {
     }
 
     public T insert(T object) {
-        for (Validator<T> validator : this.validators) {
-            validator.validate(object);
-        }
-
+        this.validators.forEach(validator -> validator.validate(object));
         return dao.insert(object);
     }
 
     public T update(T object) {
-        for (Validator<T> validator : validators) {
-            validator.validate(object);
-        }
-
+        this.validators.forEach(validator -> validator.validate(object));
         return dao.update(object);
     }
 

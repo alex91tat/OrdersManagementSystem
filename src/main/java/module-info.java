@@ -7,4 +7,6 @@ module utcnpt.pt2025_30422_tat_dragos_assignment_3 {
 
     opens utcnpt.pt2025_30422_tat_dragos_assignment_3 to javafx.fxml;
     exports utcnpt.pt2025_30422_tat_dragos_assignment_3;
+    opens utcnpt.pt2025_30422_tat_dragos_assignment_3.userInterface to javafx.fxml;
+
 }
