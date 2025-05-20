@@ -19,4 +19,9 @@ public class BillBLL extends AbstractBLL<Bill>{
     public void delete(Bill bill) {
         throw new UnsupportedOperationException("Bills cannot be deleted.");
     }
+
+    @Override
+    public Bill findByName(String name) {
+        throw new UnsupportedOperationException("Bills cannot be searched by name.");
+    }
 }

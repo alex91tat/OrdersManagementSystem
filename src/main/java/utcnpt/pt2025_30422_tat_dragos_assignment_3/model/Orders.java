@@ -1,10 +1,27 @@
 package utcnpt.pt2025_30422_tat_dragos_assignment_3.model;
 
-public class Order {
+public class Orders {
     private int id;
     private int clientId;
     private int productId;
     private int quantity;
+
+    public Orders() {
+    }
+
+    public Orders(int id, int clientId, int productId, int quantity) {
+        super();
+        this.id = id;
+        this.clientId = clientId;
+        this.productId = productId;
+    }
+
+    public Orders(int clientId, int productId, int quantity) {
+        super();
+        this.clientId = clientId;
+        this.productId = productId;
+        this.quantity = quantity;
+    }
 
     public int getId() {
         return id;

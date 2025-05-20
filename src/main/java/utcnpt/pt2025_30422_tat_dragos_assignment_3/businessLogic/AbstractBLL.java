@@ -45,4 +45,13 @@ public class AbstractBLL<T> {
         return object;
     }
 
+    public T findByName(String name) {
+        T object = dao.findByName(name);
+        if (object == null) {
+            throw new IllegalArgumentException("No object with name " + name + " exists!");
+        }
+
+        return object;
+    }
+
 }

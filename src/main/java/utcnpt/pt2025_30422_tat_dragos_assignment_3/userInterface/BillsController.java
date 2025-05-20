@@ -5,16 +5,37 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import utcnpt.pt2025_30422_tat_dragos_assignment_3.businessLogic.BillBLL;
+import utcnpt.pt2025_30422_tat_dragos_assignment_3.model.Bill;
+
+import java.util.List;
 
 public class BillsController {
     @FXML
     private Button backButton;
+    @FXML
+    private TableView<Bill> billsTableView;
+
+    private final static BillBLL billBLL = new BillBLL();
+
+    @FXML
+    private void initialize() {
+        refreshTable();
+    }
 
     @FXML
     private void backButtonOnAction(ActionEvent event) {
         loadScene(backButton, "/utcnpt/pt2025_30422_tat_dragos_assignment_3/HomePageView.fxml");
+    }
+
+    @FXML
+    private void refreshTable() {
+        List<Bill> bills = billBLL.getAll();
+        billsTableView.getColumns().clear();
+        GenerateTableHeader.generateHeader(billsTableView, bills, Bill.class);
     }
 
     @FXML
