@@ -67,7 +67,7 @@ public class OrdersController {
             Product product = productBLL.findById(productId);
 
             if (client != null && product != null) {
-                if (quantity > product.getQuantity()) {
+                if (quantity > product.getQuantity() || quantity < 0) {
                     errorLabel.setVisible(true);
                     return;
                 }
@@ -85,7 +85,7 @@ public class OrdersController {
             clearInputFields();
             refreshTable();
         } catch (NumberFormatException e) {
-            System.out.println("Invalid age value!");
+            System.out.println("Invalid quantity value!");
         } catch (Exception e) {
             e.printStackTrace();
         }

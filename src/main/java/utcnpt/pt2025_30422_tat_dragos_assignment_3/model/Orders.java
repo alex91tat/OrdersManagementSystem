@@ -14,6 +14,7 @@ public class Orders {
         this.id = id;
         this.clientId = clientId;
         this.productId = productId;
+        this.quantity = quantity;
     }
 
     public Orders(int clientId, int productId, int quantity) {

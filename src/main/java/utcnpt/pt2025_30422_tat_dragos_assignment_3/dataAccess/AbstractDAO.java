@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class AbstractDAO<T> {
     private static final Logger LOGGER = Logger.getLogger(AbstractDAO.class.getName());
@@ -151,6 +153,60 @@ public class AbstractDAO<T> {
         return list;
     }
 
+//    public T insert(T object) {
+//        Connection connection = null;
+//        PreparedStatement statement = null;
+//        ResultSet generatedKeys = null;
+//
+//        Field[] fields = type.getDeclaredFields();
+//        StringBuilder query = new StringBuilder();
+//        query.append("INSERT INTO ").append(type.getSimpleName()).append(" (");
+//
+//        for (int i = 1; i < fields.length; i++) {
+//            query.append(fields[i].getName());
+//            if (i < fields.length - 1) {
+//                query.append(", ");
+//            }
+//        }
+//
+//        query.append(") VALUES (");
+//
+//        for (int i = 1; i < fields.length; i++) {
+//            query.append("?");
+//            if (i < fields.length - 1) {
+//                query.append(", ");
+//            }
+//        }
+//        query.append(")");
+//
+//        try {
+//            connection = ConnectionFactory.getConnection();
+//            statement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+//
+//            for (int i = 1; i < fields.length; i++) {
+//                fields[i].setAccessible(true);
+//                statement.setObject(i, fields[i].get(object));
+//            }
+//
+//            statement.executeUpdate();
+//
+//            generatedKeys = statement.getGeneratedKeys();
+//            if (generatedKeys.next()) {
+//                Field idField = fields[0];
+//                idField.setAccessible(true);
+//                idField.set(object, generatedKeys.getInt(1));
+//            }
+//        } catch (SQLException | IllegalAccessException e) {
+//            LOGGER.log(Level.WARNING, type.getName() + "DAO:insert " + e.getMessage(), e);
+//        } finally {
+//            ConnectionFactory.close(generatedKeys);
+//            ConnectionFactory.close(statement);
+//            ConnectionFactory.close(connection);
+//        }
+//
+//        return object;
+//    }
+
     public T insert(T object) {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -158,42 +214,45 @@ public class AbstractDAO<T> {
 
         Field[] fields = type.getDeclaredFields();
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO ").append(type.getSimpleName()).append(" (");
 
-        for (int i = 1; i < fields.length; i++) {
-            query.append(fields[i].getName());
-            if (i < fields.length - 1) {
-                query.append(", ");
-            }
-        }
+        List<Field> nonIdFields = IntStream.range(1, fields.length)
+                .mapToObj(i -> fields[i])
+                .collect(Collectors.toList());
 
-        query.append(") VALUES (");
+        String columnNames = nonIdFields.stream()
+                .map(Field::getName)
+                .collect(Collectors.joining(", "));
 
-        for (int i = 1; i < fields.length; i++) {
-            query.append("?");
-            if (i < fields.length - 1) {
-                query.append(", ");
-            }
-        }
-        query.append(")");
+        String placeholders = nonIdFields.stream()
+                .map(f -> "?")
+                .collect(Collectors.joining(", "));
+
+        query.append("INSERT INTO ")
+                .append(type.getSimpleName())
+                .append(" (")
+                .append(columnNames)
+                .append(") VALUES (")
+                .append(placeholders)
+                .append(")");
 
         try {
             connection = ConnectionFactory.getConnection();
             statement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
 
-            for (int i = 1; i < fields.length; i++) {
-                fields[i].setAccessible(true);
-                statement.setObject(i, fields[i].get(object));
+            for (int i = 0; i < nonIdFields.size(); i++) {
+                Field field = nonIdFields.get(i);
+                field.setAccessible(true);
+                statement.setObject(i + 1, field.get(object));
             }
 
             statement.executeUpdate();
-
             generatedKeys = statement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 Field idField = fields[0];
                 idField.setAccessible(true);
                 idField.set(object, generatedKeys.getInt(1));
             }
+
         } catch (SQLException | IllegalAccessException e) {
             LOGGER.log(Level.WARNING, type.getName() + "DAO:insert " + e.getMessage(), e);
         } finally {
@@ -205,37 +264,81 @@ public class AbstractDAO<T> {
         return object;
     }
 
+//    public T update(T object) {
+//        Connection connection = null;
+//        PreparedStatement statement = null;
+//        StringBuilder query = new StringBuilder();
+//        query.append("UPDATE ").append(type.getSimpleName()).append(" SET ");
+//
+//        Field[] fields = type.getDeclaredFields();
+//        for (int i = 1; i < fields.length; i++) {
+//            query.append(fields[i].getName()).append("=?");
+//            if (i < fields.length - 1) {
+//                query.append(", ");
+//            }
+//        }
+//
+//        query.append(" WHERE ").append(fields[0].getName()).append("=?");
+//
+//        try {
+//            connection = ConnectionFactory.getConnection();
+//            statement = connection.prepareStatement(query.toString());
+//
+//            for (int i = 1; i < fields.length; i++) {
+//                fields[i].setAccessible(true);
+//                statement.setObject(i, fields[i].get(object));
+//            }
+//
+//            fields[0].setAccessible(true);
+//            statement.setObject(fields.length, fields[0].get(object));
+//
+//            statement.executeUpdate();
+//        } catch (SQLException | IllegalAccessException e) {
+//            LOGGER.log(Level.WARNING, type.getName() + "DAO:update " + e.getMessage());
+//        } finally {
+//            ConnectionFactory.close(statement);
+//            ConnectionFactory.close(connection);
+//        }
+//
+//        return object;
+//    }
+
     public T update(T object) {
         Connection connection = null;
         PreparedStatement statement = null;
-        StringBuilder query = new StringBuilder();
-        query.append("UPDATE ").append(type.getSimpleName()).append(" SET ");
-
         Field[] fields = type.getDeclaredFields();
-        for (int i = 1; i < fields.length; i++) {
-            query.append(fields[i].getName()).append("=?");
-            if (i < fields.length - 1) {
-                query.append(", ");
-            }
-        }
+        List<Field> nonIdFields = IntStream.range(1, fields.length)
+                .mapToObj(i -> fields[i])
+                .collect(Collectors.toList());
 
-        query.append(" WHERE ").append(fields[0].getName()).append("=?");
+        String setClause = nonIdFields.stream()
+                .map(field -> field.getName() + "=?")
+                .collect(Collectors.joining(", "));
+
+        StringBuilder query = new StringBuilder();
+        query.append("UPDATE ")
+                .append(type.getSimpleName())
+                .append(" SET ")
+                .append(setClause)
+                .append(" WHERE ")
+                .append(fields[0].getName())
+                .append("=?");
 
         try {
             connection = ConnectionFactory.getConnection();
             statement = connection.prepareStatement(query.toString());
 
-            for (int i = 1; i < fields.length; i++) {
-                fields[i].setAccessible(true);
-                statement.setObject(i, fields[i].get(object));
+            for (int i = 0; i < nonIdFields.size(); i++) {
+                Field field = nonIdFields.get(i);
+                field.setAccessible(true);
+                statement.setObject(i + 1, field.get(object));
             }
 
             fields[0].setAccessible(true);
             statement.setObject(fields.length, fields[0].get(object));
-
             statement.executeUpdate();
         } catch (SQLException | IllegalAccessException e) {
-            LOGGER.log(Level.WARNING, type.getName() + "DAO:update " + e.getMessage());
+            LOGGER.log(Level.WARNING, type.getName() + "DAO:update " + e.getMessage(), e);
         } finally {
             ConnectionFactory.close(statement);
             ConnectionFactory.close(connection);
@@ -243,6 +346,7 @@ public class AbstractDAO<T> {
 
         return object;
     }
+
 
     public void delete(T object) {
         Connection connection = null;
